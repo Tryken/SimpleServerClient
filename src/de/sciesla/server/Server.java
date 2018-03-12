@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 import de.sciesla.datapackage.DataPackage;
 import de.sciesla.datapackage.KickDataPackage;
+import de.sciesla.datapackage.MessageDataPackage;
+import de.sciesla.event.Event;
+import de.sciesla.event.EventHandler;
+import de.sciesla.event.EventManager;
 import de.sciesla.server.connection.Connection;
 import de.sciesla.server.logger.LogType;
 import de.sciesla.server.logger.Logger;
@@ -24,6 +28,8 @@ public abstract class Server {
 	private ServerSocket listener;
 	private ArrayList<Connection> connections;
 
+	private EventManager eventManager;
+	
 	private int maxUps = 20;
 	private int ups;
 	private long tick;
@@ -31,11 +37,8 @@ public abstract class Server {
 	private Thread updateThread;
 
 	public abstract void onInit();
-
 	public abstract void onStart();
-
 	public abstract void onStop();
-
 	public abstract void onUpdate(float deltaTime);
 
 	public Server(int port, int maxClients, String password) {
@@ -56,6 +59,8 @@ public abstract class Server {
 
 		connections = new ArrayList<>();
 
+		eventManager = new EventManager();
+		
 		onInit();
 	}
 
@@ -158,6 +163,26 @@ public abstract class Server {
 		stop();
 		start();
 	}
+	
+	public void sendDataPackage(Connection connection, DataPackage datapackage) {
+		connection.sendDataPackage(datapackage);
+	}
+
+	public void broadcastDataPackage(DataPackage datapackage) {
+		for (Connection connection : connections)
+			if (connection.isAuthenticated())
+				connection.sendDataPackage(datapackage);
+	}
+	
+	public static void brodcastMessage(String message) {
+		
+		Logger.log(LogType.INFO, message);
+		getInstance().broadcastDataPackage(new MessageDataPackage(message));
+	}
+	
+	public static void callEvent(Event event, Runnable runnable) {
+		getInstance().getEventManager().callEvent(event, runnable);
+	}
 
 	private void setServerState(ServerState state) {
 		this.serverState = state;
@@ -190,7 +215,14 @@ public abstract class Server {
 	public boolean isConnectionLimitReached() {
 		return (getMaxClients() != -1 && getConnectionAmount() > getMaxClients());
 	}
+	
+	public void registerEventHandler(EventHandler eventHandler) {
+		getEventManager().registerEventHandler(eventHandler);
+	}
 
+	public EventManager getEventManager() {
+		return eventManager;
+	}
 	/**
 	 * @return the maxClients
 	 */
@@ -252,16 +284,6 @@ public abstract class Server {
 	 */
 	public float getDeltaTime() {
 		return deltaTime;
-	}
-
-	public void sendDataPackage(Connection connection, DataPackage datapackage) {
-		connection.sendDataPackage(datapackage);
-	}
-
-	public void broadcastDataPackage(DataPackage datapackage) {
-		for (Connection connection : connections)
-			if (connection.isAuthenticated())
-				connection.sendDataPackage(datapackage);
 	}
 
 	public static Server getInstance() {

@@ -3,8 +3,6 @@ package de.sciesla.demo.snake.datapackage;
 import java.util.UUID;
 
 import de.sciesla.datapackage.DataPackage;
-import de.sciesla.demo.snake.client.Game;
-import de.sciesla.demo.snake.server.SnakeServer;
 import de.sciesla.sender.Sender;
 import de.sciesla.server.Server;
 

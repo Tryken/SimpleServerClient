@@ -14,6 +14,8 @@ import de.sciesla.datapackage.EncryptionDataPackage;
 import de.sciesla.datapackage.MessageDataPackage;
 import de.sciesla.encoding.AESEncoding;
 import de.sciesla.encoding.RSAEncoding;
+import de.sciesla.event.server.OnClientJoinEvent;
+import de.sciesla.event.server.OnClientLeaveEvent;
 import de.sciesla.sender.Sender;
 import de.sciesla.sender.SenderType;
 import de.sciesla.server.Server;
@@ -45,7 +47,7 @@ public class Connection extends Thread {
 
 		this.aesEncoding = new AESEncoding();
 
-		Logger.log(LogType.INFO, userName + socket.getInetAddress().toString() + " versucht sich zu verbinden!");
+		Logger.log(LogType.INFO, userName + socket.getInetAddress().toString() + " tries to connect!");
 	}
 
 	@Override
@@ -80,11 +82,17 @@ public class Connection extends Thread {
 				// e.printStackTrace();
 			}
 
-			Logger.log(LogType.INFO, userName + " hat den Server verlassen!");
-
 			if (authenticated) {
-				Server.getInstance()
-						.broadcastDataPackage(new MessageDataPackage(userName + " hat den Server verlassen!"));
+				Server.callEvent(new OnClientLeaveEvent(this), new Runnable() {
+					
+					@Override
+					public void run() {
+	
+						Server.brodcastMessage(getUserName() + " left the server!");
+					}
+				});
+			} else {
+				Logger.log(LogType.INFO, getUserName() + " canceled the connection!");
 			}
 
 			Server.getInstance().removeConnection(this);
@@ -92,13 +100,11 @@ public class Connection extends Thread {
 	}
 
 	public void sendDataPackage(DataPackage datapackage) {
-	    if ((datapackage.getClass().isAnnotationPresent(Authorized.class)) && 
-	    	      (!isAuthenticated())) {
-	    	      return;
-	    	    }
-	    	    if (this.out != null) {
-	    	      this.out.println(datapackage.toString(getAesEncoding()));
-	    	    }
+	    if ((datapackage.getClass().isAnnotationPresent(Authorized.class)) && (!isAuthenticated())) 
+	    	return;
+	    
+	    if (this.out != null)
+	    	this.out.println(datapackage.toString(getAesEncoding()));
 	}
 
 	/**
@@ -131,10 +137,16 @@ public class Connection extends Thread {
 		this.authenticated = authenticated;
 
 		if (authenticated) {
-			Server server = Server.getInstance();
 			sendDataPackage(new AuthenticatedPackage());
-			Logger.log(LogType.INFO, userName + " hat den Server betreten!");
-			server.broadcastDataPackage(new MessageDataPackage(userName + " hat den Server betreten!"));
+			
+			Server.callEvent(new OnClientJoinEvent(this), new Runnable() {
+				
+				@Override
+				public void run() {
+
+					Server.brodcastMessage(getUserName() + " has joined the server!");
+				}
+			});
 		}
 	}
 

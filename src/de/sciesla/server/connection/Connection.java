@@ -34,6 +34,7 @@ public class Connection extends Thread {
 	private AESEncoding aesEncoding;
 
 	public Connection(Socket socket, boolean authenticated) {
+		
 		this.socket = socket;
 		this.userName = "User-" + String.format("%04d", (int) (Math.random() * 9999));
 		this.uuid = UUID.randomUUID();

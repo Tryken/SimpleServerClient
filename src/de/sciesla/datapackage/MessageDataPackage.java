@@ -6,7 +6,6 @@ import de.sciesla.sender.Sender;
 import de.sciesla.server.Server;
 import de.sciesla.server.logger.LogType;
 import de.sciesla.server.logger.Logger;
-import java.io.PrintStream;
 
 @Encoding
 @Authorized

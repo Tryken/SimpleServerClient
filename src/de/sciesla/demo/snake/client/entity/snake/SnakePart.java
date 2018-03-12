@@ -29,11 +29,14 @@ public class SnakePart {
 	public void move(Direction direction, boolean createNewPart) {
 
 		if (getNextpart() != null) {
+			
 			if (getNextpart().getNextpart() == null && createNewPart) {
+				
 				getNextpart().setNextpart(new SnakePart(getNextpart().getPosX(), getNextpart().getPosY()));
 				getNextpart().setPosX(getPosX());
 				getNextpart().setPosY(getPosY());
 			} else {
+				
 				getNextpart().move(Direction.NONE, createNewPart);
 				getNextpart().setPosX(getPosX());
 				getNextpart().setPosY(getPosY());

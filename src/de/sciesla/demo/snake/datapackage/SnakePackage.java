@@ -11,7 +11,7 @@ import de.sciesla.server.Server;
 public class SnakePackage extends DataPackage {
 
 	public SnakePackage(UUID uuid, String snake) {
-		super("", snake);
+		super(snake);
 	}
 
 	@Override
@@ -21,7 +21,5 @@ public class SnakePackage extends DataPackage {
 	}
 
 	@Override
-	public void onClient(Sender sender) {
-
-	}
+	public void onClient(Sender sender) {}
 }

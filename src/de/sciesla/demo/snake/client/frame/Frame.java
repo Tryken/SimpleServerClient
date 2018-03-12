@@ -1,6 +1,5 @@
 package de.sciesla.demo.snake.client.frame;
 
-import java.awt.Button;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;

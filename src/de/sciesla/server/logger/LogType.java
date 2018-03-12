@@ -2,7 +2,9 @@ package de.sciesla.server.logger;
 
 public enum LogType {
 
-	INFO("Info"), ERROR("Error"), DEBUG("Debug");
+	INFO("Info"), 
+	ERROR("Error"), 
+	DEBUG("Debug");
 
 	private String name;
 

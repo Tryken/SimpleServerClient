@@ -20,6 +20,7 @@ public class Sender {
 	}
 
 	public void sendDataPackage(DataPackage datapackage) {
+		
 		switch (senderType) {
 		case CLIENT:
 			Server.getInstance().sendDataPackage(connection, datapackage);
@@ -34,6 +35,7 @@ public class Sender {
 	 * @return the userName
 	 */
 	public String getUserName() {
+		
 		switch (senderType) {
 		case CLIENT:
 			return connection.getUserName();
@@ -47,6 +49,7 @@ public class Sender {
 	 * @return the userName
 	 */
 	public Connection getConnection() {
+		
 		switch (senderType) {
 		case CLIENT:
 			return connection;

@@ -17,7 +17,7 @@ public class Snake extends Entity {
 	private int count = 0;
 
 	public Snake(Direction direction, int posX, int posY, int length, Color color) {
-
+		
 		this.color = color;
 		this.direction = direction;
 
@@ -51,9 +51,12 @@ public class Snake extends Entity {
 			}
 
 			SnakePart tempPart = new SnakePart(pX, pY);
+			
 			if (nextPart == null) {
+				
 				nextPart = tempPart;
 			} else {
+				
 				tempPart.setNextpart(nextPart);
 				nextPart = tempPart;
 			}
@@ -63,13 +66,10 @@ public class Snake extends Entity {
 	}
 
 	@Override
-	public void onInit() {
-
-	}
+	public void onInit() {}
 
 	@Override
 	public void onUpdate(float dt) {
-
 		count += dt;
 		if (count >= 1000 / speed) {
 
@@ -80,7 +80,6 @@ public class Snake extends Entity {
 
 	@Override
 	public void onRender(Graphics g, float dt) {
-
 		g.setColor(this.color);
 		mainpart.onRender(g, dt);
 	}
@@ -88,7 +87,7 @@ public class Snake extends Entity {
 	/**
 	 * @return the mainpart
 	 */
-	public SnakePart getMainpart() {
+	public SnakePart getMainpart() {		
 		return mainpart;
 	}
 
@@ -96,14 +95,14 @@ public class Snake extends Entity {
 	 * @param mainpart
 	 *            the mainpart to set
 	 */
-	public void setMainpart(SnakePart mainpart) {
+	public void setMainpart(SnakePart mainpart) {		
 		this.mainpart = mainpart;
 	}
 
 	/**
 	 * @return the color
 	 */
-	public Color getColor() {
+	public Color getColor() {	
 		return color;
 	}
 
@@ -126,7 +125,7 @@ public class Snake extends Entity {
 	 * @param direction
 	 *            the direction to set
 	 */
-	public void setDirection(Direction direction) {
+	public void setDirection(Direction direction) {	
 		this.direction = direction;
 	}
 }

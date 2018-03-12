@@ -49,9 +49,8 @@ public class Game extends Frame {
 
 		g.setColor(Color.WHITE);
 
-		if (isPaused()) {
+		if (isPaused())
 			g.drawString("Paused", getWidth() / 2 - 5, getHeight() / 2);
-		}
 
 		g.drawString("Fps: " + getFps(), 5, 15);
 	}

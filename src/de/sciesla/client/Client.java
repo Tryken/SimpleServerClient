@@ -110,6 +110,7 @@ public abstract class Client {
 		if ((datapackage.getClass().isAnnotationPresent(Authorized.class)) && (!isAuthenticated())) {
 			return;
 		}
+		
 		if (this.out != null) {
 			this.out.println(datapackage.toString(getAesEncoding()));
 		}
@@ -123,8 +124,7 @@ public abstract class Client {
 	}
 
 	/**
-	 * @param authentificated
-	 *            the authentificated to set
+	 * @param authenticated the authentificated to set
 	 */
 	public void setAuthenticated(boolean authentificated) {
 		this.authenticated = authentificated;

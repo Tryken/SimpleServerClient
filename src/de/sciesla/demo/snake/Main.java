@@ -1,6 +1,5 @@
 package de.sciesla.demo.snake;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import de.sciesla.demo.snake.client.Game;
@@ -19,6 +18,7 @@ public class Main {
 
 		if (n == 1)
 			new Game();
+		
 		if (n == 0)
 			new SnakeServer().start();
 	}

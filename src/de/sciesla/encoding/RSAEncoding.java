@@ -20,19 +20,24 @@ public class RSAEncoding {
 	private KeyPair keyPair = null;
 
 	public void generateKeyPair() {
+		
 		try {
+			
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 			SecureRandom rand = new SecureRandom();
 			keyPairGenerator.initialize(1024, rand);
 			this.keyPair = keyPairGenerator.generateKeyPair();
 		} catch (NoSuchAlgorithmException e) {
+			
 			e.printStackTrace();
 		}
 	}
 
 	public static String encrypt(String arg, PublicKey pk) {
+		
 		Cipher cipher = null;
 		try {
+			
 			cipher = Cipher.getInstance("RSA");
 			cipher.init(1, pk);
 			byte[] chiffrat = cipher.doFinal(arg.getBytes("ISO-8859-1"));
@@ -50,6 +55,7 @@ public class RSAEncoding {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		
 		return null;
 	}
 
@@ -58,8 +64,11 @@ public class RSAEncoding {
 	}
 
 	public static String decrypt(String arg, PrivateKey sk) {
+		
 		Cipher cipher = null;
+		
 		try {
+			
 			cipher = Cipher.getInstance("RSA");
 			cipher.init(2, sk);
 			byte[] chiffrat = cipher.doFinal(Base64.getDecoder().decode(arg));
@@ -77,6 +86,7 @@ public class RSAEncoding {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		
 		return null;
 	}
 
@@ -85,11 +95,15 @@ public class RSAEncoding {
 	}
 
 	public String getPublicKey() {
+		
 		try {
+			
 			return new String(Base64.getEncoder().encode(getKeyPair().getPublic().getEncoded()), "ISO-8859-1");
 		} catch (UnsupportedEncodingException e) {
+			
 			e.printStackTrace();
 		}
+		
 		return null;
 	}
 }

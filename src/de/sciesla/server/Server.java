@@ -30,8 +30,8 @@ public abstract class Server {
 
 	private EventManager eventManager;
 	
-	private int maxUps = 20;
-	private int ups;
+	private int maxTps = 20;
+	private int tps;
 	private long tick;
 	private float deltaTime;
 	private Thread updateThread;
@@ -112,16 +112,16 @@ public abstract class Server {
 
 					tick++;
 					deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
-					if (deltaTime < (float) (1000 / maxUps)) {
+					if (deltaTime < (float) (1000 / maxTps)) {
 						try {
-							Thread.sleep((long) ((float) (1000 / maxUps) - deltaTime));
+							Thread.sleep((long) ((float) (1000 / maxTps) - deltaTime));
 							deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
 
-					ups = (int) (1000 / deltaTime);
+					tps = (int) (1000 / deltaTime);
 					lastTime = System.nanoTime();
 				}
 			}
@@ -253,23 +253,23 @@ public abstract class Server {
 	/**
 	 * @return the maxUps
 	 */
-	public int getMaxUps() {
-		return maxUps;
+	public int getMaxTps() {
+		return maxTps;
 	}
 
 	/**
 	 * @param maxUps
 	 *            the maxUps to set
 	 */
-	public void setMaxUps(int maxUps) {
-		this.maxUps = maxUps;
+	public void setMaxTps(int maxTps) {
+		this.maxTps = maxTps;
 	}
 
 	/**
 	 * @return the ups
 	 */
-	public int getUps() {
-		return ups;
+	public int getTps() {
+		return tps;
 	}
 
 	/**

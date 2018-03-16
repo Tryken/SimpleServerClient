@@ -3,7 +3,6 @@ package de.sciesla;
 import java.util.Scanner;
 
 import de.sciesla.client.Client;
-import de.sciesla.datapackage.MessageDataPackage;
 
 public class ChatClient extends Client {
 
@@ -36,7 +35,7 @@ public class ChatClient extends Client {
 
 			@SuppressWarnings("resource")
 			String message = new Scanner(System.in).nextLine();
-			sendDataPackage(new MessageDataPackage(message));
+			sendMessage(message);
 		}
 	}
 }

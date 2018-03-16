@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import de.sciesla.annotations.Authorized;
 import de.sciesla.datapackage.DataPackage;
+import de.sciesla.datapackage.MessageDataPackage;
 import de.sciesla.encoding.AESEncoding;
 import de.sciesla.sender.Sender;
 import de.sciesla.sender.SenderType;
@@ -107,6 +108,7 @@ public abstract class Client {
 	}
 
 	public void sendDataPackage(DataPackage datapackage) {
+		
 		if ((datapackage.getClass().isAnnotationPresent(Authorized.class)) && (!isAuthenticated())) {
 			return;
 		}
@@ -114,6 +116,10 @@ public abstract class Client {
 		if (this.out != null) {
 			this.out.println(datapackage.toString(getAesEncoding()));
 		}
+	}
+	
+	public void sendMessage(String message) {
+		sendDataPackage(new MessageDataPackage(message));
 	}
 
 	/**

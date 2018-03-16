@@ -37,10 +37,7 @@ public class EncryptionDataPackage extends DataPackage {
 		connection.getAesEncoding().setSecretKey(key);
 		
 		if (connection.isAuthenticated()) {
-			
-			connection.sendDataPackage(new AuthenticatedPackage());
-			Logger.log(LogType.INFO, connection.getName() + " hat den Server betreten!");
-			Server.getInstance().broadcastDataPackage(new MessageDataPackage(connection.getName() + " hat den Server betreten!"));
+			connection.setAuthenticated(true);
 		} else {
 			
 			connection.sendDataPackage(new AuthenticationPackage());

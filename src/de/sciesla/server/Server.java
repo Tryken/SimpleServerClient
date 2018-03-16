@@ -5,6 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import de.sciesla.command.CommandHandler;
+import de.sciesla.command.CommandManager;
+import de.sciesla.command.CommandRegister;
 import de.sciesla.datapackage.DataPackage;
 import de.sciesla.datapackage.KickDataPackage;
 import de.sciesla.datapackage.MessageDataPackage;
@@ -29,6 +32,7 @@ public abstract class Server {
 	private ArrayList<Connection> connections;
 
 	private EventManager eventManager;
+	private CommandManager commandManager;
 	
 	private int maxTps = 20;
 	private int tps;
@@ -60,6 +64,8 @@ public abstract class Server {
 		connections = new ArrayList<>();
 
 		eventManager = new EventManager();
+		commandManager = new CommandManager();
+		new CommandRegister();
 		
 		onInit();
 	}
@@ -167,6 +173,10 @@ public abstract class Server {
 	public void sendDataPackage(Connection connection, DataPackage datapackage) {
 		connection.sendDataPackage(datapackage);
 	}
+	
+	public void sendMessage(Connection connection, String message) {
+		connection.sendMessage(message);
+	}
 
 	public void broadcastDataPackage(DataPackage datapackage) {
 		for (Connection connection : connections)
@@ -219,10 +229,19 @@ public abstract class Server {
 	public void registerEventHandler(EventHandler eventHandler) {
 		getEventManager().registerEventHandler(eventHandler);
 	}
+	
+	public void registerCommandHandler(CommandHandler commandHandler, String... labels) {
+		getCommandManager().registerCommandHandler(commandHandler, labels);
+	}
 
 	public EventManager getEventManager() {
 		return eventManager;
 	}
+	
+	public CommandManager getCommandManager() {
+		return commandManager;
+	}
+	
 	/**
 	 * @return the maxClients
 	 */

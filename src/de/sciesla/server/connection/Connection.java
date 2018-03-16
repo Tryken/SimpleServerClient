@@ -106,6 +106,10 @@ public class Connection extends Thread {
 	    if (this.out != null)
 	    	this.out.println(datapackage.toString(getAesEncoding()));
 	}
+	
+	public void sendMessage(String message) {
+		sendDataPackage(new MessageDataPackage(message));
+	}
 
 	/**
 	 * @return the userName

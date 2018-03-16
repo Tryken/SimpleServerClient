@@ -9,7 +9,7 @@ public class Main {
 
 		if (new Scanner(System.in).nextLine().equals("s")) {
 
-			ChatServer server = new ChatServer(25565, "test1234", 32);
+			ChatServer server = new ChatServer(25565, "", 32);
 			server.start();
 		} else {
 

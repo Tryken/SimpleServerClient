@@ -31,7 +31,7 @@ public abstract class DataPackage {
 			json = aesEncoding.encrypt(json);
 			json = "$" + json;
 		}
-
+		
 		return json;
 	}
 

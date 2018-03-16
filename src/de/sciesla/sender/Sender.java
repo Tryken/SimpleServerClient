@@ -23,14 +23,26 @@ public class Sender {
 		
 		switch (senderType) {
 		case CLIENT:
-			Server.getInstance().sendDataPackage(connection, datapackage);
+			Server.getInstance().sendDataPackage(getConnection(), datapackage);
 			break;
 		case SERVER:
 			Client.getInstance().sendDataPackage(datapackage);
 			break;
 		}
 	}
-
+	
+	public void sendMessage(String message) {
+		
+		switch (senderType) {
+		case CLIENT:
+			Server.getInstance().sendMessage(getConnection(), message);
+			break;
+		case SERVER:
+			Client.getInstance().sendMessage(message);
+			break;
+		}
+	}
+	
 	/**
 	 * @return the userName
 	 */
@@ -57,5 +69,9 @@ public class Sender {
 			return null;
 		}
 		return null;
+	}
+
+	public SenderType getType() {
+		return senderType;
 	}
 }

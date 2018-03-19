@@ -33,7 +33,7 @@ public class AESEncoding {
 
 	public String encrypt(String arg) {
 		
-		Cipher cipher = null;
+		Cipher cipher;
 		
 		try {
 			
@@ -41,26 +41,16 @@ public class AESEncoding {
 			cipher.init(1, this.sk);
 			byte[] chiffrat = cipher.doFinal(arg.getBytes("ISO-8859-1"));
 			return new String(Base64.getEncoder().encode(chiffrat), "ISO-8859-1");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
 	public String decrypt(String arg) {
 		
-		Cipher cipher = null;
+		Cipher cipher;
 		
 		try {
 			
@@ -69,20 +59,10 @@ public class AESEncoding {
 			cipher.init(2, this.sk);
 			byte[] chiffrat = cipher.doFinal(arg.getBytes("ISO-8859-1"));
 			return new String(chiffrat, "ISO-8859-1");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 

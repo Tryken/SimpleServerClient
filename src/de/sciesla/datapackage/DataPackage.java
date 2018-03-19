@@ -45,7 +45,7 @@ public abstract class DataPackage {
 		
 		GsonBuilder gson = new GsonBuilder();
 		gson.registerTypeAdapter(DataPackage.class, new DatapackageDeserializer());
-		return (DataPackage) gson.create().fromJson(s, DataPackage.class);
+		return gson.create().fromJson(s, DataPackage.class);
 	}
 
 	public int getLength() {
@@ -66,45 +66,45 @@ public abstract class DataPackage {
 		
 		if ((i < this.args.length) && (i >= 0)) {
 			
-			return Integer.valueOf(Integer.parseInt(this.args[i]));
+			return Integer.parseInt(this.args[i]);
 		}	
-		return Integer.valueOf(0);
+		return 0;
 	}
 
 	public Float getFloat(int i) {
 		
 		if ((i < this.args.length) && (i >= 0)) {
 			
-			return Float.valueOf(Float.parseFloat(this.args[i]));
+			return Float.parseFloat(this.args[i]);
 		}	
-		return Float.valueOf(0.0F);
+		return 0.0F;
 	}
 
 	public Double getDouble(int i) {
 		
 		if ((i < this.args.length) && (i >= 0)) {
 			
-			return Double.valueOf(Double.parseDouble(this.args[i]));
+			return Double.parseDouble(this.args[i]);
 		}		
-		return Double.valueOf(0.0D);
+		return 0.0D;
 	}
 
 	public Long getLong(int i) {
 		
 		if ((i < this.args.length) && (i >= 0)) {
 			
-			return Long.valueOf(Long.parseLong(this.args[i]));
+			return Long.parseLong(this.args[i]);
 		}
-		return Long.valueOf(0L);
+		return 0L;
 	}
 
 	public Boolean getBoolean(int i) {
 		
 		if ((i < this.args.length) && (i >= 0)) {
 			
-			return Boolean.valueOf(Boolean.parseBoolean(this.args[i]));
+			return Boolean.parseBoolean(this.args[i]);
 		}
-		return Boolean.valueOf(false);
+		return Boolean.FALSE;
 	}
 
 	public Object getObject(int i) {

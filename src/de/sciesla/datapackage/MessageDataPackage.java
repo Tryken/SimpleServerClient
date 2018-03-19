@@ -29,14 +29,12 @@ public class MessageDataPackage extends DataPackage {
 		if(commandManager.callCommand(sender, message))
 			return;
 	
-		Server.callEvent(new OnChatMessageEvent(message), new Runnable() {
-			public void run() {
+		Server.callEvent(new OnChatMessageEvent(message), () -> {
 
-				String formattedMessage = sender.getUserName() + ": " + getString(0);
-				Server.getInstance().broadcastDataPackage(new MessageDataPackage(formattedMessage));
-				Logger.log(LogType.INFO, formattedMessage);
-			}
-		});
+            String formattedMessage = sender.getUserName() + ": " + getString(0);
+            Server.getInstance().broadcastDataPackage(new MessageDataPackage(formattedMessage));
+            Logger.log(LogType.INFO, formattedMessage);
+        });
 	}
 
 	public void onClient(Sender sender) {

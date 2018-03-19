@@ -59,51 +59,43 @@ public abstract class Client {
 			return;
 		}
 
-		new Thread() {
-			@Override
-			public void run() {
+		new Thread(() -> {
 
-				try {
-					socket = new Socket(host, port);
-					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-					out = new PrintWriter(socket.getOutputStream(), true);
+            try {
+                socket = new Socket(host, port);
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
 
-					new Thread() {
-						@Override
-						public void run() {
-							onConnected();
-						}
-					}.start();
+                new Thread(() -> onConnected()).start();
 
-					String line;
-					while ((line = in.readLine()) != null) {
-						DataPackage dataPackage = DataPackage.fromString(line, getAesEncoding());
-						if (dataPackage != null) // ERRORhandling server verlassen?
-							dataPackage.onClient(new Sender(SenderType.SERVER));
-					}
+                String line;
+                while ((line = in.readLine()) != null) {
+                    DataPackage dataPackage = DataPackage.fromString(line, getAesEncoding());
+                    if (dataPackage != null) // ERRORhandling server verlassen?
+                        dataPackage.onClient(new Sender(SenderType.SERVER));
+                }
 
-				} catch (IOException e) {
+            } catch (IOException e) {
 
-				} finally {
-					try {
-						socket.close();
-						socket = null;
-						System.out.println("Verbindung verloren!");
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} catch (NullPointerException e2) {
-						System.out.println("Konnte keine Verbindung zum Server herstellen!");
-					}
+            } finally {
+                try {
+                    socket.close();
+                    socket = null;
+                    System.out.println("Verbindung verloren!");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (NullPointerException e2) {
+                    System.out.println("Konnte keine Verbindung zum Server herstellen!");
+                }
 
-					new Thread() {
-						@Override
-						public void run() {
-							onDisconnected();
-						}
-					}.start();
-				}
-			}
-		}.start();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        onDisconnected();
+                    }
+                }.start();
+            }
+        }).start();
 
 	}
 
@@ -132,8 +124,8 @@ public abstract class Client {
 	/**
 	 * @param authenticated the authentificated to set
 	 */
-	public void setAuthenticated(boolean authentificated) {
-		this.authenticated = authentificated;
+	public void setAuthenticated(boolean authenticated) {
+		this.authenticated = authenticated;
 	}
 
 	public AESEncoding getAesEncoding() {

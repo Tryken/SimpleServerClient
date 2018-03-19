@@ -52,7 +52,7 @@ public class EncryptionDataPackage extends DataPackage {
 		}
 		
 		Client client = Client.getInstance();
-		client.getAesEncoding().generateSecretKey(getInt(1).intValue());
+		client.getAesEncoding().generateSecretKey(getInt(1));
 		
 		try {
 			
@@ -63,10 +63,7 @@ public class EncryptionDataPackage extends DataPackage {
 			String key = client.getAesEncoding().getSecretKey();
 			String encryptedkey = RSAEncoding.encrypt(key, generatePublic);
 			sender.sendDataPackage(new EncryptionDataPackage(encryptedkey));
-		} catch (InvalidKeySpecException e) {
-			
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			
 			e.printStackTrace();
 		}

@@ -4,5 +4,5 @@ public enum CommandResponse {
 
 	SUCCESS,
 	SYNTAX_ERROR,
-	NO_PERMISSIONS;
+	NO_PERMISSIONS
 }

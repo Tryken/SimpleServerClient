@@ -36,14 +36,14 @@ public class SnakeServer extends Server {
 	@Override
 	public void onUpdate(float deltaTime) {
 
-		if (start == false && getConnectionAmount() == 2) {
+		if (!start && getConnectionAmount() == 2) {
 
 			paused = false;
 			start = true;
 			broadcastDataPackage(new GameStatePackage("resume"));
 		}
 
-		if (start == true && getConnectionAmount() <= 1) {
+		if (start && getConnectionAmount() <= 1) {
 			paused = true;
 			start = false;
 			broadcastDataPackage(new GameStatePackage("paused"));

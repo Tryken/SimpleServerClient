@@ -79,59 +79,53 @@ public abstract class Server {
 		setServerState(ServerState.STARTING);
 
 		setServerState(ServerState.STARTED);
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					listener = new ServerSocket(port);
-					Logger.log(LogType.INFO, "Listening on Port " + port);
+		new Thread(() -> {
+            try {
+                listener = new ServerSocket(port);
+                Logger.log(LogType.INFO, "Listening on Port " + port);
 
-					while (true) {
+                while (true) {
 
-						Socket socket = listener.accept();
-						Connection connection = new Connection(socket, password.equalsIgnoreCase(""));
-						connections.add(connection);
-						connection.start();
+                    Socket socket = listener.accept();
+                    Connection connection = new Connection(socket, password.equalsIgnoreCase(""));
+                    connections.add(connection);
+                    connection.start();
 
-					}
-				} catch (IOException e) {
+                }
+            } catch (IOException e) {
 
-					Logger.log(LogType.ERROR, "Ein Server läuft bereits unter diesem");
-					Server.getInstance().stop();
-				} finally {
+                Logger.log(LogType.ERROR, "Ein Server läuft bereits unter diesem");
+                Server.getInstance().stop();
+            } finally {
 
-				}
+            }
 
-			}
-		}.start();
+        }).start();
 
 		onStart();
 
-		updateThread = new Thread() {
-			@Override
-			public void run() {
+		updateThread = new Thread(() -> {
 
-				long lastTime = System.nanoTime();
+            long lastTime = System.nanoTime();
 
-				while (true) {
-					onUpdate(deltaTime);
+            while (true) {
+                onUpdate(deltaTime);
 
-					tick++;
-					deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
-					if (deltaTime < (float) (1000 / maxTps)) {
-						try {
-							Thread.sleep((long) ((float) (1000 / maxTps) - deltaTime));
-							deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
+                tick++;
+                deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
+                if (deltaTime < (float) (1000 / maxTps)) {
+                    try {
+                        Thread.sleep((long) ((float) (1000 / maxTps) - deltaTime));
+                        deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-					tps = (int) (1000 / deltaTime);
-					lastTime = System.nanoTime();
-				}
-			}
-		};
+                tps = (int) (1000 / deltaTime);
+                lastTime = System.nanoTime();
+            }
+        });
 		updateThread.start();
 	}
 
@@ -277,7 +271,7 @@ public abstract class Server {
 	}
 
 	/**
-	 * @param maxUps
+	 * @param maxTps
 	 *            the maxUps to set
 	 */
 	public void setMaxTps(int maxTps) {

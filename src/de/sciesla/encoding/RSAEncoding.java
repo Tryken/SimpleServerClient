@@ -9,8 +9,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Base64.Decoder;
-import java.util.Base64.Encoder;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -35,27 +33,17 @@ public class RSAEncoding {
 
 	public static String encrypt(String arg, PublicKey pk) {
 		
-		Cipher cipher = null;
+		Cipher cipher;
 		try {
 			
 			cipher = Cipher.getInstance("RSA");
 			cipher.init(1, pk);
 			byte[] chiffrat = cipher.doFinal(arg.getBytes("ISO-8859-1"));
 			return new String(Base64.getEncoder().encode(chiffrat), "ISO-8859-1");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -65,7 +53,7 @@ public class RSAEncoding {
 
 	public static String decrypt(String arg, PrivateKey sk) {
 		
-		Cipher cipher = null;
+		Cipher cipher;
 		
 		try {
 			
@@ -73,20 +61,10 @@ public class RSAEncoding {
 			cipher.init(2, sk);
 			byte[] chiffrat = cipher.doFinal(Base64.getDecoder().decode(arg));
 			return new String(chiffrat, "ISO-8859-1");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 

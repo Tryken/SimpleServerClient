@@ -83,14 +83,7 @@ public class Connection extends Thread {
 			}
 
 			if (authenticated) {
-				Server.callEvent(new OnClientLeaveEvent(this), new Runnable() {
-					
-					@Override
-					public void run() {
-	
-						Server.brodcastMessage(getUserName() + " left the server!");
-					}
-				});
+				Server.callEvent(new OnClientLeaveEvent(this), () -> Server.brodcastMessage(getUserName() + " left the server!"));
 			} else {
 				Logger.log(LogType.INFO, getUserName() + " canceled the connection!");
 			}
@@ -133,7 +126,7 @@ public class Connection extends Thread {
 	}
 
 	/**
-	 * @param authentificated
+	 * @param authenticated
 	 *            the authentificated to set
 	 */
 	public void setAuthenticated(boolean authenticated) {
@@ -143,14 +136,7 @@ public class Connection extends Thread {
 		if (authenticated) {
 			sendDataPackage(new AuthenticatedPackage());
 			
-			Server.callEvent(new OnClientJoinEvent(this), new Runnable() {
-				
-				@Override
-				public void run() {
-
-					Server.brodcastMessage(getUserName() + " has joined the server!");
-				}
-			});
+			Server.callEvent(new OnClientJoinEvent(this), () -> Server.brodcastMessage(getUserName() + " has joined the server!"));
 		}
 	}
 

@@ -12,12 +12,6 @@ public class AuthenticatedPackage extends DataPackage {
 		Client client = Client.getInstance();
 		client.setAuthenticated(true);
 
-		new Thread() {
-			
-			public void run() {
-				
-				client.onAuthenticated();
-			}
-		}.start();
+		new Thread(() -> client.onAuthenticated()).start();
 	}
 }

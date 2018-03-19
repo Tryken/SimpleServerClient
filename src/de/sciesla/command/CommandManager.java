@@ -33,9 +33,8 @@ public class CommandManager {
 		String[] split = message.split(" ");
 		String label = split[0].replace(prefix, "");
 		String[] args = new String[split.length - 1];
-		
-		for(int i = 1; i < split.length; i++)
-			args[i - 1] = split[i];
+
+		System.arraycopy(split, 1, args, 0, split.length - 1);
 
 		CommandHandler commandHandler = commandHandlers.get(label);
 		if(commandHandler == null) {
@@ -50,26 +49,24 @@ public class CommandManager {
 		if(sender.getType() == SenderType.CLIENT)
 			Logger.log(LogType.INFO, sender.getUserName() + " use " + message);
 			
-		new Thread() {	
-			public void run() {
-				CommandResponse response = commandHandler.onCommand(sender, label, args);
-				
-				switch (response) {
-				case NO_PERMISSIONS:
-					if(sender.getType() == SenderType.SERVER)
-						Logger.log(LogType.INFO, "This command is not available for the console!");
-					else
-						sender.sendMessage("You have no authority to use this command!");			
-					break;
-				case SYNTAX_ERROR:
-					if(sender.getType() == SenderType.SERVER)
-						Logger.log(LogType.INFO, "Syntaxerror use " + getPrefix() + "help " + label);
-					else
-						sender.sendMessage("Syntaxerror use " + getPrefix() + "help " + label);
-					break;
-				}
-			}
-		}.start();
+		new Thread(() -> {
+            CommandResponse response = commandHandler.onCommand(sender, label, args);
+
+            switch (response) {
+            case NO_PERMISSIONS:
+                if(sender.getType() == SenderType.SERVER)
+                    Logger.log(LogType.INFO, "This command is not available for the console!");
+                else
+                    sender.sendMessage("You have no authority to use this command!");
+                break;
+            case SYNTAX_ERROR:
+                if(sender.getType() == SenderType.SERVER)
+                    Logger.log(LogType.INFO, "Syntaxerror use " + getPrefix() + "help " + label);
+                else
+                    sender.sendMessage("Syntaxerror use " + getPrefix() + "help " + label);
+                break;
+            }
+        }).start();
 		
 		return true;
 	}

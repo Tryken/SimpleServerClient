@@ -21,7 +21,7 @@ public abstract class Frame extends JFrame {
 	private int fps = 0;
 	private int maxFps = 64;
 	private float deltaTime = 0f;
-	private long tick = 0l;
+	private long tick = 0L;
 
 	private Canvas canvas;
 
@@ -55,40 +55,37 @@ public abstract class Frame extends JFrame {
 
 		onInit();
 
-		new Thread() {
-			@Override
-			public void run() {
+		new Thread(() -> {
 
-				BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+            BufferStrategy bufferStrategy = canvas.getBufferStrategy();
 
-				long lastTime = System.nanoTime();
-				Graphics g = bufferStrategy.getDrawGraphics();
-				while (true) {
+            long lastTime = System.nanoTime();
+            Graphics g = bufferStrategy.getDrawGraphics();
+            while (true) {
 
-					g.setColor(Color.BLACK);
-					g.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, getWidth(), getHeight());
 
-					onUpdate(deltaTime);
-					onRender(g, deltaTime);
+                onUpdate(deltaTime);
+                onRender(g, deltaTime);
 
-					bufferStrategy.show();
+                bufferStrategy.show();
 
-					tick++;
-					deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
-					if (deltaTime < (float) (1000 / maxFps)) {
-						try {
-							Thread.sleep((long) ((float) (1000 / maxFps) - deltaTime));
-							deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
+                tick++;
+                deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
+                if (deltaTime < (float) (1000 / maxFps)) {
+                    try {
+                        Thread.sleep((long) ((float) (1000 / maxFps) - deltaTime));
+                        deltaTime = (int) (System.nanoTime() - lastTime) / 1000000;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-					fps = (int) (1000 / deltaTime);
-					lastTime = System.nanoTime();
-				}
-			}
-		}.start();
+                fps = (int) (1000 / deltaTime);
+                lastTime = System.nanoTime();
+            }
+        }).start();
 
 	}
 

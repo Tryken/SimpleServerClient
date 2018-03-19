@@ -10,7 +10,7 @@ public class EventManager {
 	
 	public EventManager() {
 		
-		eventHandlers = new ArrayList<EventHandler>();
+		eventHandlers = new ArrayList<>();
 	}
 	
 	public void registerEventHandler(EventHandler eventHandler) {
@@ -20,40 +20,32 @@ public class EventManager {
 	
 	public void callEvent(Event event, Runnable runnable) {
 		
-		new Thread() {	
-			public void run() {
-				
-				boolean cancelled = false;
-				
-				for(EventHandler eventHandler : eventHandlers)
-					for(Method method : eventHandler.getClass().getMethods())
-						if(method.getParameterCount() == 1 &&
-						   method.isAnnotationPresent(de.sciesla.annotations.Event.class) &&
-						   method.getParameterTypes()[0].equals(event.getClass())) {
-							
-							try {
-								
-								method.invoke(eventHandler, event);
-								if(event.isCancelled())
-									cancelled = true;
-								
-							} catch (IllegalAccessException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IllegalArgumentException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (InvocationTargetException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-				
-				if(!cancelled)
-					runnable.run();
+		new Thread(() -> {
 
-			}
-		}.start();
+            boolean cancelled = false;
+
+            for(EventHandler eventHandler : eventHandlers)
+                for(Method method : eventHandler.getClass().getMethods())
+                    if(method.getParameterCount() == 1 &&
+                       method.isAnnotationPresent(de.sciesla.annotations.Event.class) &&
+                       method.getParameterTypes()[0].equals(event.getClass())) {
+
+                        try {
+
+                            method.invoke(eventHandler, event);
+                            if(event.isCancelled())
+                                cancelled = true;
+
+                        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+					}
+
+            if(!cancelled)
+                runnable.run();
+
+        }).start();
 					
 	}
 }

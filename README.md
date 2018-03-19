@@ -1,9 +1,11 @@
 # SimpleServerClient (Alpha not stable)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3482e99ce02e48af91cce8707ff67599)](https://www.codacy.com/app/Tryken/SimpleServerClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Tryken/SimpleServerClient&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.org/Tryken/SimpleServerClient.svg?branch=master)](https://travis-ci.org/Tryken/SimpleServerClient)
+
 >Welcome to our simplification of server/client sockets.
 I think that as a programmer you shouldn't waste time on such things as taking care of a server client system because it can be much easier.
 Our system supports by default an event system, AES 256bit encryption, chat functions, server password protection, maximum connection number and much more.
-
+http://185.223.28.115:8080/job/Tryken/lastSuccessfulBuild/artifact/target/SimpleServerClient-0.0.1-SNAPSHOT.jar
 ## Features
 
 * event system

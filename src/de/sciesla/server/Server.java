@@ -1,9 +1,11 @@
 package de.sciesla.server;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Properties;
 
 import de.sciesla.command.CommandHandler;
 import de.sciesla.command.CommandManager;
@@ -38,6 +40,7 @@ public abstract class Server {
 	private int tps;
 	private long tick;
 	private float deltaTime;
+	private Properties properties;
 	private Thread updateThread;
 
 	public abstract void onInit();
@@ -46,6 +49,29 @@ public abstract class Server {
 	public abstract void onUpdate(float deltaTime);
 
 	public Server(int port, int maxClients, String password) {
+		this(port, maxClients, password, null);
+	}
+
+	public Server(int port, int maxClients, String password, String propertyFilename) {
+		this.properties = new Properties();
+		InputStream in = null;
+		if(propertyFilename != null && new File(propertyFilename).exists()) {
+			try {
+				in = new FileInputStream(propertyFilename);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else
+			in = Server.class.getResourceAsStream("/server.prop");
+
+		if(in == null) Logger.log(LogType.ERROR, "Could not load a property file");
+		else {
+			try {
+				properties.load(in);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		instance = this;
 
@@ -56,6 +82,11 @@ public abstract class Server {
 		serverState = ServerState.STOPPED;
 
 		init();
+	}
+
+	protected String getProperty(String key){
+		if(properties == null) return null;
+		return properties.getProperty(key);
 	}
 
 	private void init() {

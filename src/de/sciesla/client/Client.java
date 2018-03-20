@@ -1,10 +1,8 @@
 package de.sciesla.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.util.Properties;
 
 import de.sciesla.annotations.Authorized;
 import de.sciesla.datapackage.DataPackage;
@@ -12,6 +10,9 @@ import de.sciesla.datapackage.MessageDataPackage;
 import de.sciesla.encoding.AESEncoding;
 import de.sciesla.sender.Sender;
 import de.sciesla.sender.SenderType;
+import de.sciesla.server.Server;
+import de.sciesla.server.logger.LogType;
+import de.sciesla.server.logger.Logger;
 
 public abstract class Client {
 
@@ -19,6 +20,7 @@ public abstract class Client {
 
 	private String host;
 	private int port;
+	private Properties properties;
 
 	private boolean authenticated = false;
 
@@ -30,6 +32,29 @@ public abstract class Client {
 	private AESEncoding aesEncoding;
 
 	public Client(String host, int port) {
+		this(host, port, null);
+	}
+
+	public Client(String host, int port, String propertyFilename){
+		this.properties = new Properties();
+		InputStream in = null;
+		if(propertyFilename != null && new File(propertyFilename).exists()) {
+			try {
+				in = new FileInputStream(propertyFilename);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else
+			in = Server.class.getResourceAsStream("/client.prop");
+
+		if(in == null) Logger.log(LogType.ERROR, "Could not load a property file");
+		else {
+			try {
+				properties.load(in);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		Client.instance = this;
 
@@ -37,6 +62,11 @@ public abstract class Client {
 		this.port = port;
 
 		init();
+	}
+
+	protected String getProperty(String key){
+		if(properties == null) return null;
+		return properties.getProperty(key);
 	}
 
 	public abstract void onConnected();

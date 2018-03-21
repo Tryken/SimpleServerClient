@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2018 Sven Ciesla
+Copyright (c) 2018 Enrico De Toni and Sven Ciesla
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

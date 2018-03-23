@@ -16,11 +16,6 @@
             </configuration>
         </plugin>
     </plugins>
-    <resources>
-      <resource>
-        <directory>src/de/sciesla/properties</directory>
-      </resource>
-    </resources>
   </build>
   <dependencies>
     <dependency>

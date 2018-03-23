@@ -40,8 +40,9 @@ public abstract class Server {
 	private int tps;
 	private long tick;
 	private float deltaTime;
-	private Properties properties;
 	private Thread updateThread;
+
+	private Properties properties;
 
 	public abstract void onInit();
 	public abstract void onStart();
@@ -49,30 +50,47 @@ public abstract class Server {
 	public abstract void onUpdate(float deltaTime);
 
 	public Server(int port, int maxClients, String password) {
-		this(port, maxClients, password, null);
+		createServer(port, maxClients, password);
 	}
 
 	public Server(int port, int maxClients, String password, String propertyFilename) {
-		this.properties = new Properties();
-		InputStream in = null;
-		if(propertyFilename != null && new File(propertyFilename).exists()) {
-			try {
-				in = new FileInputStream(propertyFilename);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else
-			in = Server.class.getResourceAsStream("/server.prop");
+		boolean read = readProperties(propertyFilename);
+		if(!read)
+			Logger.log(LogType.ERROR, "Could not read the property file");
 
-		if(in == null) Logger.log(LogType.ERROR, "Could not load a property file");
-		else {
-			try {
-				properties.load(in);
-			} catch (IOException e) {
-				e.printStackTrace();
+		createServer(port, maxClients, password);
+	}
+
+	public Server(String propertyFilename){
+		boolean read = readProperties(propertyFilename);
+		if(read){
+			String portProp = properties.getProperty("port");
+			String clientProp = properties.getProperty("max_clients");
+			String passwordProp = properties.getProperty("password");
+
+			if(portProp == null){
+				Logger.log(LogType.ERROR, "No port property found");
+				return;
+			} else if(clientProp == null){
+				Logger.log(LogType.ERROR, "No max_clients property found");
+				return;
+			} else if(passwordProp == null){
+				Logger.log(LogType.ERROR, "No password property found");
+				return;
 			}
+
+			try{
+				int portNo = Integer.parseInt(portProp);
+				int clientsNo = Integer.parseInt(clientProp);
+				createServer(portNo, clientsNo, passwordProp);
+			} catch(Exception e){
+				Logger.log(LogType.ERROR, "One property is not a number but was expected to be a number");
+			}
+
 		}
+	}
 
+	private void createServer(int port, int maxClients, String password){
 		instance = this;
 
 		this.port = port;
@@ -84,10 +102,24 @@ public abstract class Server {
 		init();
 	}
 
-	protected String getProperty(String key){
+	private boolean readProperties(String propertyFilename) {
+		properties = new Properties();
+		File propertyFile = new File(propertyFilename);
+		if (!propertyFile.exists() || propertyFile.isDirectory()) return false;
+
+		try {
+			properties.load(new FileInputStream(propertyFile));
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	public String getProperty(String key){
 		if(properties == null) return null;
 		return properties.getProperty(key);
 	}
+
 
 	private void init() {
 		Logger.log(LogType.INFO, "Server Init");

@@ -1,4 +1,4 @@
-package de.sciesla;
+package de.sciesla.demo.chat;
 
 import de.sciesla.annotations.Event;
 import de.sciesla.event.EventHandler;

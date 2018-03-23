@@ -1,4 +1,4 @@
-package de.sciesla;
+package de.sciesla.demo.chat;
 
 import java.util.Scanner;
 

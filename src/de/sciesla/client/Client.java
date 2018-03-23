@@ -10,7 +10,6 @@ import de.sciesla.datapackage.MessageDataPackage;
 import de.sciesla.encoding.AESEncoding;
 import de.sciesla.sender.Sender;
 import de.sciesla.sender.SenderType;
-import de.sciesla.server.Server;
 import de.sciesla.server.logger.LogType;
 import de.sciesla.server.logger.Logger;
 
@@ -20,7 +19,6 @@ public abstract class Client {
 
 	private String host;
 	private int port;
-	private Properties properties;
 
 	private boolean authenticated = false;
 
@@ -31,32 +29,46 @@ public abstract class Client {
 	private ClientState clientState;
 	private AESEncoding aesEncoding;
 
+	private Properties properties;
+
 	public Client(String host, int port) {
-		this(host, port, null);
+		createClient(host, port);
 	}
 
 	public Client(String host, int port, String propertyFilename){
-		this.properties = new Properties();
-		InputStream in = null;
-		if(propertyFilename != null && new File(propertyFilename).exists()) {
-			try {
-				in = new FileInputStream(propertyFilename);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else
-			in = Server.class.getResourceAsStream("/client.prop");
+		boolean read = readProperties(propertyFilename);
+		if(!read)
+			Logger.log(LogType.ERROR, "Could not read the property file");
 
-		if(in == null) Logger.log(LogType.ERROR, "Could not load a property file");
-		else {
-			try {
-				properties.load(in);
-			} catch (IOException e) {
-				e.printStackTrace();
+		createClient(host, port);
+	}
+
+	public Client(String propertyFilename){
+		boolean read = readProperties(propertyFilename);
+		if(read){
+			String hostProp = properties.getProperty("host");
+			String portProp = properties.getProperty("port");
+
+			if(hostProp == null){
+				Logger.log(LogType.ERROR, "No host property found");
+				return;
+			} else if(portProp == null){
+				Logger.log(LogType.ERROR, "No port property found");
+				return;
 			}
+
+			try{
+				int portNo = Integer.parseInt(portProp);
+				createClient(hostProp, portNo);
+			} catch(Exception e){
+				Logger.log(LogType.ERROR, "Port property is not a number");
+			}
+
 		}
+	}
 
-		Client.instance = this;
+	private void createClient(String host, int port) {
+		instance = this;
 
 		this.host = host;
 		this.port = port;
@@ -64,10 +76,24 @@ public abstract class Client {
 		init();
 	}
 
-	protected String getProperty(String key){
-		if(properties == null) return null;
+
+	private boolean readProperties(String propertyFilename) {
+		properties = new Properties();
+		File propertyFile = new File(propertyFilename);
+		if (!propertyFile.exists() || propertyFile.isDirectory()) return false;
+
+		try {
+			properties.load(new FileInputStream(propertyFile));
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	public String getProperty(String key){
 		return properties.getProperty(key);
 	}
+
 
 	public abstract void onConnected();
 

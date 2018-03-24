@@ -9,7 +9,7 @@ import java.util.Properties;
 import de.sveh.simpleserverclient.command.ICommandHandler;
 import de.sveh.simpleserverclient.command.CommandManager;
 import de.sveh.simpleserverclient.command.CommandRegister;
-import de.sveh.simpleserverclient.datapackage.DataPackage;
+import de.sveh.simpleserverclient.datapackage.AbstractDataPackage;
 import de.sveh.simpleserverclient.datapackage.KickDataPackage;
 import de.sveh.simpleserverclient.datapackage.MessageDataPackage;
 import de.sveh.simpleserverclient.event.Event;
@@ -158,8 +158,6 @@ public abstract class Server {
 
                 ILogger.log(LogType.ERROR, "Ein Server läuft bereits unter diesem");
                 Server.getInstance().stop();
-            } finally {
-
             }
 
         }).start();
@@ -205,7 +203,7 @@ public abstract class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
-
+			e.printStackTrace();
 		}
 
 		setServerState(ServerState.STOPPED);
@@ -226,7 +224,7 @@ public abstract class Server {
 		start();
 	}
 	
-	public void sendDataPackage(Connection connection, DataPackage datapackage) {
+	public void sendDataPackage(Connection connection, AbstractDataPackage datapackage) {
 		connection.sendDataPackage(datapackage);
 	}
 	
@@ -234,7 +232,7 @@ public abstract class Server {
 		connection.sendMessage(message);
 	}
 
-	public void broadcastDataPackage(DataPackage datapackage) {
+	public void broadcastDataPackage(AbstractDataPackage datapackage) {
 		for (Connection connection : connections)
 			if (connection.isAuthenticated())
 				connection.sendDataPackage(datapackage);

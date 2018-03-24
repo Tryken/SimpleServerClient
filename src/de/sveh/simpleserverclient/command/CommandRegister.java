@@ -5,10 +5,8 @@ import de.sveh.simpleserverclient.command.normal.VersionCommand;
 
 public class CommandRegister {
 
-	public CommandRegister() {
-		
-		Server server = Server.getInstance();
-		
-		server.registerCommandHandler(new VersionCommand(), "v", "version");
-	}
+    public CommandRegister() {
+        Server server = Server.getInstance();
+        server.registerCommandHandler(new VersionCommand(), "v", "version");
+    }
 }

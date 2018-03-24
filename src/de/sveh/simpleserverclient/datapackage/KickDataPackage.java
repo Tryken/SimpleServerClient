@@ -2,18 +2,16 @@ package de.sveh.simpleserverclient.datapackage;
 
 import de.sveh.simpleserverclient.sender.Sender;
 
-public class KickDataPackage extends DataPackage {
-	
-	public KickDataPackage(String reason) {
-		
-		super(reason);
-	}
+public class KickDataPackage extends AbstractDataPackage {
 
-	public void onServer(Sender sender) {
-	}
+    public KickDataPackage(String reason) {
+        super(reason);
+    }
 
-	public void onClient(Sender sender) {
-		
-		System.out.println(getString(0));
-	}
+    public void onServer(Sender sender) {
+    }
+
+    public void onClient(Sender sender) {
+        System.out.println(getString(0));
+    }
 }

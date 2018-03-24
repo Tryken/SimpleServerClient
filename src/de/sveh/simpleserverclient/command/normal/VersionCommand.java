@@ -6,20 +6,20 @@ import de.sveh.simpleserverclient.sender.Sender;
 
 public class VersionCommand implements ICommandHandler {
 
-	@Override
-	public void onInit() {
+    @Override
+    public void onInit() {
 
-	}
+    }
 
-	@Override
-	public CommandResponse onCommand(Sender sender, String prefix, String[] args) {
+    @Override
+    public CommandResponse onCommand(Sender sender, String prefix, String[] args) {
 
-		if(args.length != 0)
-			return CommandResponse.SYNTAX_ERROR;
-		
-		sender.sendMessage("SimpleServerClient 0.0.0.1-Alpha");	
-		
-		return CommandResponse.SUCCESS;
-	}
+        if (args.length != 0)
+            return CommandResponse.SYNTAX_ERROR;
+
+        sender.sendMessage("SimpleServerClient 0.0.0.1-Alpha");
+
+        return CommandResponse.SUCCESS;
+    }
 
 }

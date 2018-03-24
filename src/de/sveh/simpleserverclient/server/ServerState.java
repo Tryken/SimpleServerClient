@@ -2,19 +2,19 @@ package de.sveh.simpleserverclient.server;
 
 public enum ServerState {
 
-	STARTING("Starting"), 
-	STARTED("Started"), 
-	STOPPING("Stopping"), 
-	STOPPED("Stopped"), 
-	RESTARTING("Restarting");
+    STARTING("Starting"),
+    STARTED("Started"),
+    STOPPING("Stopping"),
+    STOPPED("Stopped"),
+    RESTARTING("Restarting");
 
-	private String name;
+    private String name;
 
-	ServerState(String name) {
-		this.name = name;
-	}
+    ServerState(String name) {
+        this.name = name;
+    }
 
-	String getName() {
-		return name;
-	}
+    String getName() {
+        return name;
+    }
 }

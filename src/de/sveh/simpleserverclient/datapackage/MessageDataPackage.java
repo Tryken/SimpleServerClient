@@ -11,33 +11,33 @@ import de.sveh.simpleserverclient.server.logger.ILogger;
 
 @Encoding
 @Authorized
-public class MessageDataPackage extends DataPackage {
-	public MessageDataPackage(String msg) {
-		super(msg);
-	}
+public class MessageDataPackage extends AbstractDataPackage {
 
-	public void onServer(Sender sender) {
-		
-		String message = getString(0);
+    public MessageDataPackage(String msg) {
+        super(msg);
+    }
 
-		if (message.equalsIgnoreCase(""))
-			return;
-		
-		Server server = Server.getInstance();
-		CommandManager commandManager = server.getCommandManager();
-		
-		if(commandManager.callCommand(sender, message))
-			return;
-	
-		Server.callEvent(new OnChatMessageEvent(message), () -> {
+    public void onServer(Sender sender) {
+        String message = getString(0);
+
+        if (message.equalsIgnoreCase(""))
+            return;
+
+        Server server = Server.getInstance();
+        CommandManager commandManager = server.getCommandManager();
+
+        if (commandManager.callCommand(sender, message))
+            return;
+
+        Server.callEvent(new OnChatMessageEvent(message), () -> {
 
             String formattedMessage = sender.getUserName() + ": " + getString(0);
             Server.getInstance().broadcastDataPackage(new MessageDataPackage(formattedMessage));
             ILogger.log(LogType.INFO, formattedMessage);
         });
-	}
+    }
 
-	public void onClient(Sender sender) {
-		System.out.println(getString(0));
-	}
+    public void onClient(Sender sender) {
+        System.out.println(getString(0));
+    }
 }

@@ -30,7 +30,7 @@ public class AESEncoding {
 
     public String encrypt(String arg) {
         Cipher cipher;
-        
+
         try {
             cipher = Cipher.getInstance("AES");
             cipher.init(1, this.sk);

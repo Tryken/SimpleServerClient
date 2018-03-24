@@ -4,21 +4,19 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public abstract class FileConfiguration {
+public abstract class AbstractFileConfiguration {
 
     private File file;
 
     public String load(String path) {
-
         file = new File(path);
 
         try {
-            if(!file.exists())
-                if(file.getParentFile().mkdirs()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.createNewFile();
-                    return "";
-                }
+            if (!file.exists() && file.getParentFile().mkdirs()) {
+                //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
+                return "";
+            }
 
             return new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {

@@ -2,9 +2,10 @@ package de.sveh.simpleserverclient.client;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Properties;
 
 import de.sveh.simpleserverclient.annotations.Authorized;
+import de.sveh.simpleserverclient.config.IConfiguration;
+import de.sveh.simpleserverclient.config.PropertyConfiguration;
 import de.sveh.simpleserverclient.datapackage.AbstractDataPackage;
 import de.sveh.simpleserverclient.datapackage.MessageDataPackage;
 import de.sveh.simpleserverclient.encoding.AESEncoding;
@@ -29,42 +30,40 @@ public abstract class Client {
     private ClientState clientState;
     private AESEncoding aesEncoding;
 
-    private Properties properties;
+    private IConfiguration properties;
 
     public Client(String host, int port) {
         createClient(host, port);
     }
 
     public Client(String host, int port, String propertyFilename) {
-        boolean read = readProperties(propertyFilename);
-        if (!read)
-            ILogger.log(LogType.ERROR, "Could not read the property file");
+        properties = new PropertyConfiguration(propertyFilename);
 
         createClient(host, port);
     }
 
     public Client(String propertyFilename) {
-        boolean read = readProperties(propertyFilename);
-        if (read) {
-            String hostProp = properties.getProperty("host");
-            String portProp = properties.getProperty("port");
+        properties = new PropertyConfiguration(propertyFilename);
 
-            if (hostProp == null) {
-                ILogger.log(LogType.ERROR, "No host property found");
-                return;
-            } else if (portProp == null) {
-                ILogger.log(LogType.ERROR, "No port property found");
-                return;
-            }
+        String hostProp = properties.getProperty("host");
+        String portProp = properties.getProperty("port");
 
-            try {
-                int portNo = Integer.parseInt(portProp);
-                createClient(hostProp, portNo);
-            } catch (Exception e) {
-                ILogger.log(LogType.ERROR, "Port property is not a number");
-            }
-
+        if (hostProp == null) {
+            ILogger.log(LogType.ERROR, "No host property found");
+            return;
+        } else if (portProp == null) {
+            ILogger.log(LogType.ERROR, "No port property found");
+            return;
         }
+
+        try {
+            int portNo = Integer.parseInt(portProp);
+            createClient(hostProp, portNo);
+        } catch (Exception e) {
+            ILogger.log(LogType.ERROR, "Port property is not a number");
+        }
+
+
     }
 
     private void createClient(String host, int port) {
@@ -76,24 +75,9 @@ public abstract class Client {
         init();
     }
 
-
-    private boolean readProperties(String propertyFilename) {
-        properties = new Properties();
-        File propertyFile = new File(propertyFilename);
-        if (!propertyFile.exists() || propertyFile.isDirectory()) return false;
-
-        try {
-            properties.load(new FileInputStream(propertyFile));
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
-
     public String getProperty(String key) {
         return properties.getProperty(key);
     }
-
 
     public abstract void onConnected();
 
@@ -121,7 +105,7 @@ public abstract class Client {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                new Thread(() -> onConnected()).start();
+                new Thread(this::onConnected).start();
 
                 String line;
                 while ((line = in.readLine()) != null) {
@@ -143,7 +127,7 @@ public abstract class Client {
                     System.out.println("Could not connect to the server!");
                 }
 
-                new Thread(() -> onDisconnected()).start();
+                new Thread(this::onDisconnected).start();
             }
         }).start();
 

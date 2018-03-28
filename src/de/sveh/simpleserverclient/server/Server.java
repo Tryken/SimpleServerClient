@@ -4,11 +4,12 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import de.sveh.simpleserverclient.command.ICommandHandler;
 import de.sveh.simpleserverclient.command.CommandManager;
 import de.sveh.simpleserverclient.command.CommandRegister;
+import de.sveh.simpleserverclient.config.IConfiguration;
+import de.sveh.simpleserverclient.config.PropertyConfiguration;
 import de.sveh.simpleserverclient.datapackage.AbstractDataPackage;
 import de.sveh.simpleserverclient.datapackage.KickDataPackage;
 import de.sveh.simpleserverclient.datapackage.MessageDataPackage;
@@ -21,127 +22,114 @@ import de.sveh.simpleserverclient.server.logger.ILogger;
 
 public abstract class Server {
 
-	private static Server instance;
+    private static Server instance;
 
-	private int port;
-	private int maxClients;
-	private String password;
+    private int port;
+    private int maxClients;
+    private String password;
 
-	private ServerState serverState;
+    private ServerState serverState;
 
-	private ServerSocket listener;
-	private ArrayList<Connection> connections;
+    private ServerSocket listener;
+    private ArrayList<Connection> connections;
 
-	private EventManager eventManager;
-	private CommandManager commandManager;
-	
-	private int maxTps = 20;
-	private int tps;
-	private long tick;
-	private float deltaTime;
-	private Thread updateThread;
+    private EventManager eventManager;
+    private CommandManager commandManager;
 
-	private Properties properties;
+    private int maxTps = 20;
+    private int tps;
+    private long tick;
+    private float deltaTime;
+    private Thread updateThread;
 
-	public abstract void onInit();
-	public abstract void onStart();
-	public abstract void onStop();
-	public abstract void onUpdate(float deltaTime);
+    private IConfiguration properties;
 
-	public Server(int port, int maxClients, String password) {
-		createServer(port, maxClients, password);
-	}
+    public abstract void onInit();
 
-	public Server(int port, int maxClients, String password, String propertyFilename) {
-		boolean read = readProperties(propertyFilename);
-		if(!read)
-			ILogger.log(LogType.ERROR, "Could not read the property file");
+    public abstract void onStart();
 
-		createServer(port, maxClients, password);
-	}
+    public abstract void onStop();
 
-	public Server(String propertyFilename){
-		boolean read = readProperties(propertyFilename);
-		if(read){
-			String portProp = properties.getProperty("port");
-			String clientProp = properties.getProperty("max_clients");
-			String passwordProp = properties.getProperty("password");
+    public abstract void onUpdate(float deltaTime);
 
-			if(portProp == null){
-				ILogger.log(LogType.ERROR, "No port property found");
-				return;
-			} else if(clientProp == null){
-				ILogger.log(LogType.ERROR, "No max_clients property found");
-				return;
-			} else if(passwordProp == null){
-				ILogger.log(LogType.ERROR, "No password property found");
-				return;
-			}
+    public Server(int port, int maxClients, String password) {
+        createServer(port, maxClients, password);
+    }
 
-			try{
-				int portNo = Integer.parseInt(portProp);
-				int clientsNo = Integer.parseInt(clientProp);
-				createServer(portNo, clientsNo, passwordProp);
-			} catch(Exception e){
-				ILogger.log(LogType.ERROR, "One property is not a number but was expected to be a number");
-			}
+    public Server(int port, int maxClients, String password, String propertyFilename) {
+        properties = new PropertyConfiguration(propertyFilename);
+        createServer(port, maxClients, password);
+    }
 
-		}
-	}
+    public Server(String propertyFilename) {
+        properties = new PropertyConfiguration(propertyFilename);
 
-	private void createServer(int port, int maxClients, String password){
-		instance = this;
+        String portProp = properties.getProperty("port");
+        String clientProp = properties.getProperty("max_clients");
+        String passwordProp = properties.getProperty("password");
 
-		this.port = port;
-		this.maxClients = maxClients;
-		this.password = password;
+        if (portProp == null) {
+            ILogger.log(LogType.ERROR, "No port property found");
+            return;
+        } else if (clientProp == null) {
+            ILogger.log(LogType.ERROR, "No max_clients property found");
+            return;
+        } else if (passwordProp == null) {
+            ILogger.log(LogType.ERROR, "No password property found");
+            return;
+        }
 
-		serverState = ServerState.STOPPED;
-
-		init();
-	}
-
-	private boolean readProperties(String propertyFilename) {
-		properties = new Properties();
-		File propertyFile = new File(propertyFilename);
-		if (!propertyFile.exists() || propertyFile.isDirectory()) return false;
-
-		try {
-			properties.load(new FileInputStream(propertyFile));
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
-	}
-
-	public String getProperty(String key){
-		if(properties == null) return null;
-		return properties.getProperty(key);
-	}
+        try {
+            int portNo = Integer.parseInt(portProp);
+            int clientsNo = Integer.parseInt(clientProp);
+            createServer(portNo, clientsNo, passwordProp);
+        } catch (Exception e) {
+            ILogger.log(LogType.ERROR, "One property is not a number but was expected to be a number");
+        }
 
 
-	private void init() {
-		ILogger.log(LogType.INFO, "Server Init");
+    }
 
-		connections = new ArrayList<>();
+    private void createServer(int port, int maxClients, String password) {
+        instance = this;
 
-		eventManager = new EventManager();
-		commandManager = new CommandManager();
-		new CommandRegister();
-		
-		onInit();
-	}
+        this.port = port;
+        this.maxClients = maxClients;
+        this.password = password;
 
-	public void start() {
-		if (serverState != ServerState.STOPPED) {
-			ILogger.log(LogType.ERROR, "Server läuft bereits!");
-			return;
-		}
+        serverState = ServerState.STOPPED;
 
-		setServerState(ServerState.STARTING);
+        init();
+    }
 
-		setServerState(ServerState.STARTED);
-		new Thread(() -> {
+    public String getProperty(String key) {
+        if (properties == null) return null;
+        return properties.getProperty(key);
+    }
+
+
+    private void init() {
+        ILogger.log(LogType.INFO, "Server Init");
+
+        connections = new ArrayList<>();
+
+        eventManager = new EventManager();
+        commandManager = new CommandManager();
+        new CommandRegister();
+
+        onInit();
+    }
+
+    public void start() {
+        if (serverState != ServerState.STOPPED) {
+            ILogger.log(LogType.ERROR, "Server läuft bereits!");
+            return;
+        }
+
+        setServerState(ServerState.STARTING);
+
+        setServerState(ServerState.STARTED);
+        new Thread(() -> {
             try {
                 listener = new ServerSocket(port);
                 ILogger.log(LogType.INFO, "Listening on Port " + port);
@@ -162,9 +150,9 @@ public abstract class Server {
 
         }).start();
 
-		onStart();
+        onStart();
 
-		updateThread = new Thread(() -> {
+        updateThread = new Thread(() -> {
 
             long lastTime = System.nanoTime();
 
@@ -186,180 +174,177 @@ public abstract class Server {
                 lastTime = System.nanoTime();
             }
         });
-		updateThread.start();
-	}
+        updateThread.start();
+    }
 
-	public void stop() {
-		if (serverState != ServerState.STARTED && serverState != ServerState.RESTARTING) {
-			ILogger.log(LogType.ERROR, "Server läuft nicht!");
-			return;
-		}
+    public void stop() {
+        if (serverState != ServerState.STARTED && serverState != ServerState.RESTARTING) {
+            ILogger.log(LogType.ERROR, "Server läuft nicht!");
+            return;
+        }
 
-		setServerState(ServerState.STOPPING);
+        setServerState(ServerState.STOPPING);
 
-		try {
-			listener.close();
-			listener = null;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
+        try {
+            listener.close();
+            listener = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
-		setServerState(ServerState.STOPPED);
+        setServerState(ServerState.STOPPED);
 
-		onStop();
-	}
+        onStop();
+    }
 
-	public void restart() {
-		if (serverState != ServerState.STARTED && serverState != ServerState.RESTARTING) {
-			ILogger.log(LogType.ERROR, "Server läuft nicht!");
-			return;
-		}
+    public void restart() {
+        if (serverState != ServerState.STARTED && serverState != ServerState.RESTARTING) {
+            ILogger.log(LogType.ERROR, "Server läuft nicht!");
+            return;
+        }
 
-		setServerState(ServerState.RESTARTING);
+        setServerState(ServerState.RESTARTING);
 
-		init();
-		stop();
-		start();
-	}
-	
-	public void sendDataPackage(Connection connection, AbstractDataPackage datapackage) {
-		connection.sendDataPackage(datapackage);
-	}
-	
-	public void sendMessage(Connection connection, String message) {
-		connection.sendMessage(message);
-	}
+        init();
+        stop();
+        start();
+    }
 
-	public void broadcastDataPackage(AbstractDataPackage datapackage) {
-		for (Connection connection : connections)
-			if (connection.isAuthenticated())
-				connection.sendDataPackage(datapackage);
-	}
-	
-	public static void brodcastMessage(String message) {
-		
-		ILogger.log(LogType.INFO, message);
-		getInstance().broadcastDataPackage(new MessageDataPackage(message));
-	}
-	
-	public static void callEvent(Event event, Runnable runnable) {
-		getInstance().getEventManager().callEvent(event, runnable);
-	}
+    public void sendDataPackage(Connection connection, AbstractDataPackage datapackage) {
+        connection.sendDataPackage(datapackage);
+    }
 
-	private void setServerState(ServerState state) {
-		this.serverState = state;
-		ILogger.log(LogType.INFO, "Server " + state.getName());
-	}
+    public void sendMessage(Connection connection, String message) {
+        connection.sendMessage(message);
+    }
 
-	public void removeConnection(Connection connection) {
-		connections.remove(connection);
-	}
+    public void broadcastDataPackage(AbstractDataPackage datapackage) {
+        for (Connection connection : connections)
+            if (connection.isAuthenticated())
+                connection.sendDataPackage(datapackage);
+    }
 
-	public void removeConnection(Connection connection, String reason) {
+    public static void brodcastMessage(String message) {
 
-		ILogger.log(LogType.INFO, "Kick " + connection.getUserName() + " reason: " + reason);
-		connection.setAuthenticated(false);
-		sendDataPackage(connection, new KickDataPackage(reason));
-		removeConnection(connection);
-	}
+        ILogger.log(LogType.INFO, message);
+        getInstance().broadcastDataPackage(new MessageDataPackage(message));
+    }
 
-	public int getConnectionAmount() {
+    public static void callEvent(Event event, Runnable runnable) {
+        getInstance().getEventManager().callEvent(event, runnable);
+    }
 
-		int i = 0;
+    private void setServerState(ServerState state) {
+        this.serverState = state;
+        ILogger.log(LogType.INFO, "Server " + state.getName());
+    }
 
-		for (Connection connection : connections)
-			if (connection.isAuthenticated())
-				i++;
+    public void removeConnection(Connection connection) {
+        connections.remove(connection);
+    }
 
-		return i;
-	}
+    public void removeConnection(Connection connection, String reason) {
 
-	public boolean isConnectionLimitReached() {
-		return (getMaxClients() != -1 && getConnectionAmount() > getMaxClients());
-	}
-	
-	public void registerEventHandler(IEventHandler eventHandler) {
-		getEventManager().registerEventHandler(eventHandler);
-	}
-	
-	public void registerCommandHandler(ICommandHandler commandHandler, String... labels) {
-		getCommandManager().registerCommandHandler(commandHandler, labels);
-	}
+        ILogger.log(LogType.INFO, "Kick " + connection.getUserName() + " reason: " + reason);
+        connection.setAuthenticated(false);
+        sendDataPackage(connection, new KickDataPackage(reason));
+        removeConnection(connection);
+    }
 
-	public EventManager getEventManager() {
-		return eventManager;
-	}
-	
-	public CommandManager getCommandManager() {
-		return commandManager;
-	}
-	
-	/**
-	 * @return the maxClients
-	 */
-	public int getMaxClients() {
-		return maxClients;
-	}
+    public int getConnectionAmount() {
 
-	/**
-	 * @param maxClients
-	 *            the maxClients to set
-	 */
-	public void setMaxClients(int maxClients) {
-		this.maxClients = maxClients;
-	}
+        int i = 0;
 
-	public boolean isPasswordCorrect(String password) {
-		return (this.password.equalsIgnoreCase("") || password.equalsIgnoreCase(this.password));
-	}
+        for (Connection connection : connections)
+            if (connection.isAuthenticated())
+                i++;
 
-	/**
-	 * @param password
-	 *            the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+        return i;
+    }
 
-	/**
-	 * @return the maxUps
-	 */
-	public int getMaxTps() {
-		return maxTps;
-	}
+    public boolean isConnectionLimitReached() {
+        return (getMaxClients() != -1 && getConnectionAmount() > getMaxClients());
+    }
 
-	/**
-	 * @param maxTps
-	 *            the maxUps to set
-	 */
-	public void setMaxTps(int maxTps) {
-		this.maxTps = maxTps;
-	}
+    public void registerEventHandler(IEventHandler eventHandler) {
+        getEventManager().registerEventHandler(eventHandler);
+    }
 
-	/**
-	 * @return the ups
-	 */
-	public int getTps() {
-		return tps;
-	}
+    public void registerCommandHandler(ICommandHandler commandHandler, String... labels) {
+        getCommandManager().registerCommandHandler(commandHandler, labels);
+    }
 
-	/**
-	 * @return the tick
-	 */
-	public long getTick() {
-		return tick;
-	}
+    public EventManager getEventManager() {
+        return eventManager;
+    }
 
-	/**
-	 * @return the deltaTime
-	 */
-	public float getDeltaTime() {
-		return deltaTime;
-	}
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
 
-	public static Server getInstance() {
-		return instance;
-	}
+    /**
+     * @return the maxClients
+     */
+    public int getMaxClients() {
+        return maxClients;
+    }
+
+    /**
+     * @param maxClients the maxClients to set
+     */
+    public void setMaxClients(int maxClients) {
+        this.maxClients = maxClients;
+    }
+
+    public boolean isPasswordCorrect(String password) {
+        return (this.password.equalsIgnoreCase("") || password.equalsIgnoreCase(this.password));
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the maxUps
+     */
+    public int getMaxTps() {
+        return maxTps;
+    }
+
+    /**
+     * @param maxTps the maxUps to set
+     */
+    public void setMaxTps(int maxTps) {
+        this.maxTps = maxTps;
+    }
+
+    /**
+     * @return the ups
+     */
+    public int getTps() {
+        return tps;
+    }
+
+    /**
+     * @return the tick
+     */
+    public long getTick() {
+        return tick;
+    }
+
+    /**
+     * @return the deltaTime
+     */
+    public float getDeltaTime() {
+        return deltaTime;
+    }
+
+    public static Server getInstance() {
+        return instance;
+    }
 }

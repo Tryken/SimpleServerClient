@@ -12,6 +12,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import javax.crypto.Cipher;
+
 public class EncryptionDataPackage extends AbstractDataPackage {
 
     public EncryptionDataPackage(String key) {
@@ -30,7 +32,7 @@ public class EncryptionDataPackage extends AbstractDataPackage {
         Connection connection = sender.getConnection();
         String key = connection.getRsaEncoding().decrypt(getString(0));
         connection.getAesEncoding().setSecretKey(key);
-
+        
         if (connection.isAuthenticated())
             connection.setAuthenticated(true);
         else
@@ -43,7 +45,6 @@ public class EncryptionDataPackage extends AbstractDataPackage {
 
         Client client = Client.getInstance();
         client.getAesEncoding().generateSecretKey(getInt(1));
-
         try {
             byte[] decodedKey = Base64.getDecoder().decode(getString(0));
             X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);

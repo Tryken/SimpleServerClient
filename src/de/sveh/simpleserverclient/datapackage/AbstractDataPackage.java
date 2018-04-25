@@ -21,10 +21,15 @@ public abstract class AbstractDataPackage {
     public abstract void onClient(Sender paramSender);
 
     public String toString(AESEncoding aesEncoding) {
+    	
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.disableHtmlEscaping();
+        gsonBuilder.disableHtmlEscaping();
         gsonBuilder.registerTypeAdapter(AbstractDataPackage.class, new DataPackageSerializer());
         String json = gsonBuilder.create().toJson(this, AbstractDataPackage.class);
-
+        
+        //System.out.println("Send: " + json);
+        
         if (getClass().isAnnotationPresent(Encoding.class)) {
             json = aesEncoding.encrypt(json);
             json = "$" + json;
@@ -38,6 +43,8 @@ public abstract class AbstractDataPackage {
             s = s.substring(1);
             s = aesEncoding.decrypt(s);
         }
+        
+        //System.out.println("Get: " + s);
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(AbstractDataPackage.class, new DataPackageDeserializer());

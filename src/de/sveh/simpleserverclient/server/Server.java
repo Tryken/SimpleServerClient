@@ -191,7 +191,7 @@ public abstract class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         setServerState(ServerState.STOPPED);

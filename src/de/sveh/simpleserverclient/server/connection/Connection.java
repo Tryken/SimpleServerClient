@@ -61,7 +61,7 @@ public class Connection extends Thread {
                 return;
             }
 
-            server.sendDataPackage(this, new EncryptionDataPackage(getRsaEncoding().getPublicKey(), 256));
+            server.sendDataPackage(this, new EncryptionDataPackage(getRsaEncoding().getPublicKey(), 128));
 
             String line;
             while (((line = in.readLine()) != null)) {

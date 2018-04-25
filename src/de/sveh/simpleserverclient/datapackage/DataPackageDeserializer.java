@@ -14,7 +14,7 @@ public class DataPackageDeserializer implements JsonDeserializer<AbstractDataPac
         JsonObject jsonObject = json.getAsJsonObject();
         String type = jsonObject.get("type").getAsString();
         JsonElement element = jsonObject.get("properties");
-
+        
         try {
             return (AbstractDataPackage) context.deserialize(element, Class.forName(type));
         } catch (ClassNotFoundException e) {

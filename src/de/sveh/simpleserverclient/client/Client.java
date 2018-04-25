@@ -115,7 +115,7 @@ public abstract class Client {
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             } finally {
                 try {
                     socket.close();
